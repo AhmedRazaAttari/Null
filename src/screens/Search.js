@@ -38,13 +38,10 @@ function Search({ navigation }) {
     console.log(search)
 
     var items = [];
-    fetch("https://api.musixmatch.com/ws/1.1/track.search?apikey=8d5a4eb3a17d84914caa6284935aec41&q_artist=" + search + "&q_track=" + search)
+    fetch("https://api.musixmatch.com/ws/1.1/track.search?apikey=8d5a4eb3a17d84914caa6284935aec41&q_artist=" + search + "&q_track=" + search + "&f_has_lyrics=true")
       .then(res => res.json())
       .then((response) => {
-        // console.log(response.message.body.track_list[0])
-        // console.log(response.message.body.track_list[0].track)
         for (var i = 0; i < response.message.body.track_list.length; i++) {
-          // console.log(response.message.body.track_list[i].track.track_name)
           items.push({
             AlbumName: response.message.body.track_list[i].track.album_name,
             AlbumID: response.message.body.track_list[i].track.album_id,
@@ -143,7 +140,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   listView: {
-    maxHeight: 250,
+    // maxHeight: 250,
     padding: 20,
     backgroundColor: 'white',
     alignItems: "center",
@@ -165,5 +162,20 @@ const styles = StyleSheet.create({
     marginTop: 5,
     flexDirection: 'row',
     alignItems: 'center'
+  },
+  bottomButton: {
+    // height: 70,
+    padding : 10,
+    // width: 100,
+    // alignSelf: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    backgroundColor: '#E6F5F1',
+    marginTop: 25
+  },
+  bottomButtonText: {
+    fontSize: 20,
+    color: '#3CCB37',
+    fontWeight: 'bold'
   }
 })

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Dimensions, TouchableOpacity, Text, ScrollView, StyleSheet, Image, AsyncStorage } from 'react-native';
+import { View, Dimensions, TouchableOpacity, Text, ScrollView, StyleSheet, Image, AsyncStorage, Share } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 import Icon1 from 'react-native-vector-icons/FontAwesome'
 
@@ -24,13 +24,38 @@ function Favourites({ navigation }) {
     const [data, SetData] = useState([]);
 
     React.useEffect(() => {
-        const myArray = AsyncStorage.getItem('@MySuperStore:key');
-            console.log(myArray);
-        // if (myArray !== null) {
-        //     // We have data!!
-        //     SetData(myArray)
-        // }
+        AsyncStorage.getItem('name', (error, result) => {
+            if (result) {
+                var fetchedArr = JSON.parse(result);
+                // console.log(fetchedArr.length)
+                SetData(fetchedArr)
+            }
+        }).then(() => {
+            // console.log(data)
+        })
     })
+
+
+    const onShare = async () => {
+        console.log(data[0].TrackName)
+        try {
+            const result = await Share.share({
+                message:
+                    'Here is my Favourite Song..\n Track Name =' + data[0].TrackName + '\n Artist Name =' + data[0].ArtistName,
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
 
     return (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
@@ -47,19 +72,19 @@ function Favourites({ navigation }) {
                         <View style={{ height: 1, backgroundColor: '#D4D4D4', marginVertical: 20 }} />
                         <View style={styles.listView}>
                             <View style={{ width: '40%' }}>
-                                <Image source={require("../assets/movie.jpg")}
+                                <Image source={require("../assets/music.png")}
                                     style={styles.imageStyle}
                                     resizeMode="stretch"
                                 />
                             </View>
                             <View style={{ width: '60%' }}>
-                                <Text style={{ textAlign: 'center', color: '#D4D4D4', fontSize: 15, marginTop: 20 }}>Track- {element.track}</Text>
-                                <Text style={{ textAlign: 'center', color: '#D4D4D4', fontSize: 15 }}>Album- {element.album}</Text>
+                                <Text style={{ textAlign: 'center', color: '#D4D4D4', fontSize: 15, marginTop: 20 }}>Track- {element.TrackName}</Text>
+                                <Text style={{ textAlign: 'center', color: '#D4D4D4', fontSize: 15 }}>Artist- {element.ArtistName}</Text>
                                 <View style={{ flexDirection: 'row', marginHorizontal: '20%', justifyContent: 'space-between', marginVertical: 20 }}>
-                                    <TouchableOpacity onPress={() => navigation.navigate("Deleted")}>
+                                    <TouchableOpacity onPress={() => AsyncStorage.clear()}>
                                         <Icon name="delete" color="#3CCB37" size={30} />
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => navigation.navigate("ShareLyrics")}>
+                                    <TouchableOpacity onPress={() => onShare()}>
                                         <Icon1 name="share-square-o" color="#3CCB37" size={30} />
                                     </TouchableOpacity>
                                 </View>
@@ -101,7 +126,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: '2%'
     },
     imageStyle: {
-        height: 120,
-        width: 120
+        height: 100,
+        width: 100
     }
 })
